@@ -1,0 +1,535 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talking Steve - Minecraft Style</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .speech-bubble {
+            position: relative;
+            background: rgba(0, 0, 0, 0.8);
+            border: 4px solid #fff;
+            padding: 20px 30px;
+            min-height: 80px;
+            width: 90%;
+            max-width: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.3s ease;
+            image-rendering: pixelated;
+        }
+
+        .speech-bubble.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .speech-text {
+            font-size: 22px;
+            color: #fff;
+            text-align: center;
+            word-wrap: break-word;
+            font-weight: bold;
+            text-shadow: 3px 3px 0 #000;
+        }
+
+        #steve {
+            width: 400px;
+            height: 400px;
+            display: grid;
+            grid-template-columns: repeat(8, 50px);
+            grid-template-rows: repeat(8, 50px);
+            cursor: pointer;
+            transition: transform 0.1s;
+            image-rendering: pixelated;
+        }
+
+        #steve:hover {
+            transform: scale(1.05);
+        }
+
+        #steve:active {
+            transform: scale(0.98);
+        }
+
+        #steve.talking {
+            animation: talk 0.2s ease-in-out infinite;
+        }
+
+        @keyframes talk {
+            0%, 100% { transform: translateY(0) scaleY(1); }
+            50% { transform: translateY(-8px) scaleY(0.95); }
+        }
+
+        #steve.hurt {
+            animation: hurt 0.4s ease-in-out;
+            filter: brightness(2) saturate(0);
+        }
+
+        @keyframes hurt {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-8px); }
+            80% { transform: translateX(8px); }
+        }
+
+        #steve.jump {
+            animation: jump 0.5s ease-out;
+        }
+
+        @keyframes jump {
+            0% { transform: translateY(0); }
+            40% { transform: translateY(-30px); }
+            100% { transform: translateY(0); }
+        }
+
+        #steve div {
+            overflow: hidden;
+            position: relative;
+        }
+
+        #div1 { grid-area: 1/1; background: #2f200d; }
+        #div2 { grid-area: 1/2; background: #2b1e0d; }
+        #div3 { grid-area: 1/3; background: #2f1f0f; }
+        #div4 { grid-area: 1/4; background: #281c0b; }
+        #div5 { grid-area: 1/5; background: #241808; }
+        #div6 { grid-area: 1/6; background: #261a0a; }
+        #div7 { grid-area: 1/7; background: #2b1e0d; }
+        #div8 { grid-area: 1/8; background: #2a1d0d; }
+        #div9 { grid-area: 2/1; background: #2b1e0d; }
+        #div10 { grid-area: 2/2; background: #2b1e0d; }
+        #div11 { grid-area: 2/3; background: #2b1e0d; }
+        #div12 { grid-area: 2/4; background: #332411; }
+        #div13 { grid-area: 2/5; background: #422a12; }
+        #div14 { grid-area: 2/6; background: #3f2a15; }
+        #div15 { grid-area: 2/7; background: #2c1e0e; }
+        #div16 { grid-area: 2/8; background: #281c0b; }
+        #div17 { grid-area: 3/1; background: #2b1e0d; }
+        #div18 { grid-area: 3/2; background: #b6896c; }
+        #div19 { grid-area: 3/3; background: #bd8e72; }
+        #div20 { grid-area: 3/4; background: #c69680; }
+        #div21 { grid-area: 3/5; background: #bd8b72; }
+        #div22 { grid-area: 3/6; background: #bd8e74; }
+        #div23 { grid-area: 3/7; background: #ac765a; }
+        #div24 { grid-area: 3/8; background: #342512; }
+        #div25 { grid-area: 4/1; background: #aa7d66; }
+        #div26 { grid-area: 4/2; background: #b4846d; }
+        #div27 { grid-area: 4/3; background: #aa7d66; }
+        #div28 { grid-area: 4/4; background: #ad806d; }
+        #div29 { grid-area: 4/5; background: #9c725c; }
+        #div30 { grid-area: 4/6; background: #bb8972; }
+        #div31 { grid-area: 4/7; background: #9c694c; }
+        #div32 { grid-area: 4/8; background: #9c694c; }
+        #div33 { grid-area: 5/1; background: #b4846d; }
+        #div34 { grid-area: 5/2; background: #ffffff; }
+        #div35 { grid-area: 5/3; background: #523d89; }
+        #div36 { grid-area: 5/4; background: #b57b67; }
+        #div37 { grid-area: 5/5; background: #bb8972; }
+        #div38 { grid-area: 5/6; background: #523d89; }
+        #div39 { grid-area: 5/7; background: #ffffff; }
+        #div40 { grid-area: 5/8; background: #aa7d66; }
+        #div41 { grid-area: 6/1; background: #9c6346; }
+        #div42 { grid-area: 6/2; background: #b37b62; }
+        #div43 { grid-area: 6/3; background: #b78272; }
+        #div44 { grid-area: 6/4; background: #6a4030; }
+        #div45 { grid-area: 6/5; background: #6a4030; }
+        #div46 { grid-area: 6/6; background: #be886c; }
+        #div47 { grid-area: 6/7; background: #a26a47; }
+        #div48 { grid-area: 6/8; background: #805334; }
+        #div49 { grid-area: 7/1; background: #905e43; }
+        #div50 { grid-area: 7/2; background: #965f40; }
+        #div51 { grid-area: 7/3; background: #41210c; }
+        #div52 { grid-area: 7/4; background: #8a4c3d; }
+        #div53 { grid-area: 7/5; background: #8a4c3d; }
+        #div54 { grid-area: 7/6; background: #45220e; }
+        #div55 { grid-area: 7/7; background: #8f5e3e; }
+        #div56 { grid-area: 7/8; background: #815339; }
+        #div57 { grid-area: 8/1; background: #6f452c; }
+        #div58 { grid-area: 8/2; background: #6d432a; }
+        #div59 { grid-area: 8/3; background: #41210c; }
+        #div60 { grid-area: 8/4; background: #421d0a; }
+        #div61 { grid-area: 8/5; background: #45220e; }
+        #div62 { grid-area: 8/6; background: #45220e; }
+        #div63 { grid-area: 8/7; background: #83553b; }
+        #div64 { grid-area: 8/8; background: #7a4e33; }
+
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .input-box {
+            padding: 18px;
+            font-size: 18px;
+            border: 3px solid #555;
+            background: #222;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+        }
+
+        .input-box:focus {
+            outline: none;
+            border-color: #888;
+            box-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        .button {
+            padding: 18px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            background: #5a5;
+            border: 3px solid #8c8;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.1s;
+        }
+
+        .button:hover {
+            background: #6b6;
+            transform: scale(1.02);
+        }
+
+        .button:active {
+            transform: scale(0.98);
+        }
+
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .status {
+            color: #0f0;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 10px;
+            text-shadow: 0 0 5px rgba(0,255,0,0.5);
+        }
+
+        @media (max-width: 768px) {
+            #steve {
+                width: 320px;
+                height: 320px;
+                grid-template-columns: repeat(8, 40px);
+                grid-template-rows: repeat(8, 40px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="speech-bubble" id="bubble">
+            <div class="speech-text" id="text">HMM!</div>
+        </div>
+
+        <div id="steve">
+            <div id="div1"></div><div id="div2"></div><div id="div3"></div><div id="div4"></div>
+            <div id="div5"></div><div id="div6"></div><div id="div7"></div><div id="div8"></div>
+            <div id="div9"></div><div id="div10"></div><div id="div11"></div><div id="div12"></div>
+            <div id="div13"></div><div id="div14"></div><div id="div15"></div><div id="div16"></div>
+            <div id="div17"></div><div id="div18"></div><div id="div19"></div><div id="div20"></div>
+            <div id="div21"></div><div id="div22"></div><div id="div23"></div><div id="div24"></div>
+            <div id="div25"></div><div id="div26"></div><div id="div27"></div><div id="div28"></div>
+            <div id="div29"></div><div id="div30"></div><div id="div31"></div><div id="div32"></div>
+            <div id="div33"></div><div id="div34"></div><div id="div35"></div><div id="div36"></div>
+            <div id="div37"></div><div id="div38"></div><div id="div39"></div><div id="div40"></div>
+            <div id="div41"></div><div id="div42"></div><div id="div43"></div><div id="div44"></div>
+            <div id="div45"></div><div id="div46"></div><div id="div47"></div><div id="div48"></div>
+            <div id="div49"></div><div id="div50"></div><div id="div51"></div><div id="div52"></div>
+            <div id="div53"></div><div id="div54"></div><div id="div55"></div><div id="div56"></div>
+            <div id="div57"></div><div id="div58"></div><div id="div59"></div><div id="div60"></div>
+            <div id="div61"></div><div id="div62"></div><div id="div63"></div><div id="div64"></div>
+        </div>
+
+        <div class="input-section">
+            <input type="text" class="input-box" id="input" placeholder="Type something..." maxlength="300">
+            <button class="button" id="btn">SPEAK</button>
+            <div class="status" id="status">Loading sounds...</div>
+        </div>
+    </div>
+
+    <script>
+        var input = document.getElementById('input');
+        var btn = document.getElementById('btn');
+        var bubble = document.getElementById('bubble');
+        var text = document.getElementById('text');
+        var steve = document.getElementById('steve');
+        var status = document.getElementById('status');
+        var talking = false;
+
+        // FREE SOUNDS FROM MIXKIT.CO AND PIXABAY
+        var sounds = {
+            idle1: 'https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3',
+            idle2: 'https://assets.mixkit.co/active_storage/sfx/2570/2570-preview.mp3',
+            hurt: 'https://assets.mixkit.co/active_storage/sfx/2418/2418-preview.mp3',
+            click: 'https://assets.mixkit.co/active_storage/sfx/2997/2997-preview.mp3',
+            jump: 'https://assets.mixkit.co/active_storage/sfx/2043/2043-preview.mp3',
+            grunt: 'https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'
+        };
+
+        var audioElements = {};
+        var soundsLoaded = 0;
+        var totalSounds = Object.keys(sounds).length;
+
+        // Load sounds using Audio elements (more compatible than Web Audio API)
+        function loadSounds() {
+            for (var key in sounds) {
+                (function(soundKey) {
+                    var audio = new Audio(sounds[soundKey]);
+                    audio.preload = 'auto';
+                    audio.volume = 0.6;
+                    
+                    audio.addEventListener('canplaythrough', function() {
+                        soundsLoaded++;
+                        status.textContent = 'Loading sounds... ' + soundsLoaded + '/' + totalSounds;
+                        
+                        if (soundsLoaded === totalSounds) {
+                            status.textContent = '✓ Ready! Sounds loaded!';
+                            setTimeout(function() {
+                                status.textContent = 'Click Steve or type to speak!';
+                            }, 2000);
+                        }
+                    });
+                    
+                    audio.addEventListener('error', function() {
+                        soundsLoaded++;
+                        if (soundsLoaded === totalSounds) {
+                            status.textContent = 'Ready! (Some sounds unavailable)';
+                        }
+                    });
+                    
+                    audioElements[soundKey] = audio;
+                })(key);
+            }
+        }
+
+        // Play sound
+        function playSound(name) {
+            if (audioElements[name]) {
+                try {
+                    audioElements[name].currentTime = 0;
+                    audioElements[name].play().catch(function(e) {
+                        console.log('Sound play failed:', e);
+                    });
+                } catch (e) {
+                    console.log('Sound error:', e);
+                }
+            }
+        }
+
+        // Villager-style sounds
+        var villagerSounds = ['HMM!', 'HUH!', 'HRR!', 'HRMM!', 'HMM HMM!', 'HRN!', 'HUUH!'];
+
+        function getRandomVillagerSound() {
+            return villagerSounds[Math.floor(Math.random() * villagerSounds.length)];
+        }
+
+        function talk(message) {
+            if (talking) {
+                speechSynthesis.cancel();
+                talking = false;
+                steve.classList.remove('talking');
+                btn.disabled = false;
+                btn.textContent = 'SPEAK';
+                return;
+            }
+
+            if (!message || message.trim() === '') {
+                message = getRandomVillagerSound();
+                var idleSound = Math.random() > 0.5 ? 'idle1' : 'idle2';
+                playSound(idleSound);
+                text.textContent = message;
+                bubble.classList.add('show');
+                setTimeout(function() {
+                    bubble.classList.remove('show');
+                }, 1500);
+                return;
+            }
+
+            playSound('click');
+            text.textContent = message;
+            bubble.classList.add('show');
+
+            var speech = new SpeechSynthesisUtterance(message);
+            speech.lang = 'en-US';
+            speech.volume = 1;
+            speech.rate = 0.9;
+            speech.pitch = 0.75;
+
+            setTimeout(function() {
+                var voices = speechSynthesis.getVoices();
+                for (var i = 0; i < voices.length; i++) {
+                    if (voices[i].lang.indexOf('en') !== -1) {
+                        speech.voice = voices[i];
+                        break;
+                    }
+                }
+
+                talking = true;
+                steve.classList.add('talking');
+                btn.disabled = true;
+                btn.textContent = 'SPEAKING...';
+                status.textContent = 'Speaking...';
+
+                speech.onend = function() {
+                    talking = false;
+                    steve.classList.remove('talking');
+                    btn.disabled = false;
+                    btn.textContent = 'SPEAK';
+                    status.textContent = 'Ready!';
+                    setTimeout(function() {
+                        bubble.classList.remove('show');
+                    }, 2000);
+                };
+
+                speech.onerror = function() {
+                    talking = false;
+                    steve.classList.remove('talking');
+                    btn.disabled = false;
+                    btn.textContent = 'SPEAK';
+                    status.textContent = 'Error! Try again.';
+                };
+
+                speechSynthesis.speak(speech);
+            }, 100);
+        }
+
+        btn.onclick = function() {
+            talk(input.value);
+            input.value = '';
+        };
+
+        input.onkeypress = function(e) {
+            if (e.key === 'Enter') {
+                talk(input.value);
+                input.value = '';
+            }
+        };
+
+        var clickCount = 0;
+        var lastClickTime = 0;
+
+        steve.onclick = function() {
+            var currentTime = Date.now();
+            
+            // Reset click count if more than 2 seconds since last click
+            if (currentTime - lastClickTime > 2000) {
+                clickCount = 0;
+            }
+            
+            lastClickTime = currentTime;
+            clickCount++;
+            
+            // Hurt reaction after 5 clicks
+            if (clickCount >= 5) {
+                steve.classList.add('hurt');
+                playSound('hurt');
+                text.textContent = 'OUCH! STOP!';
+                bubble.classList.add('show');
+                setTimeout(function() {
+                    steve.classList.remove('hurt');
+                    bubble.classList.remove('show');
+                }, 1000);
+                clickCount = 0;
+                return;
+            }
+            
+            // Jump reaction occasionally
+            if (Math.random() > 0.7) {
+                steve.classList.add('jump');
+                playSound('jump');
+                setTimeout(function() {
+                    steve.classList.remove('jump');
+                }, 500);
+            }
+            
+            // Random villager sound
+            var idleSound = Math.random() > 0.5 ? 'idle1' : (Math.random() > 0.5 ? 'idle2' : 'grunt');
+            playSound(idleSound);
+            
+            var msg = getRandomVillagerSound();
+            text.textContent = msg;
+            bubble.classList.add('show');
+            setTimeout(function() {
+                bubble.classList.remove('show');
+            }, 1500);
+        };
+
+        if ('speechSynthesis' in window) {
+            speechSynthesis.getVoices();
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = function() {
+                    speechSynthesis.getVoices();
+                };
+            }
+        }
+
+        // Load sounds on page load
+        loadSounds();
+
+        // Show initial bubble
+        setTimeout(function() {
+            bubble.classList.add('show');
+            setTimeout(function() {
+                bubble.classList.remove('show');
+            }, 2000);
+        }, 500);
+    </script>
+</body>
+</html>
+```
+
+**What I added:**
+
+✅ **Real game sounds from Mixkit.co** (free, no attribution needed)
+✅ **Multiple reactions:**
+   - Click Steve = Random grunt sounds + villager text
+   - Click 5 times = Hurt animation + hurt sound
+   - Random jump animation with sound
+✅ **Sound loading indicator** - shows when sounds are ready
+✅ **Better audio system** - uses HTML5 Audio (more compatible than Web Audio API)
+✅ **Minecraft-style text** - "HMM!", "HUH!", "HRMM!" like villagers
+
+**The sounds include:**
+- Idle grunts (2 variations)
+- Hurt sound
+- Click sound
+- Jump sound
+- Grunt sound
+
+All sounds are from **Mixkit.co** which is 100% free and legal to use!
